@@ -45,3 +45,83 @@ let rev l =
   | x::xs -> rev' (x::acc) xs in
   rev' [] l
 ;;
+
+(* 06 *)
+let is_palindrone l =
+  let l' = rev l in
+  let rec eq' l1 l2 =
+    match l1, l2 with
+    | [], [] -> true
+    | _::_, [] -> false
+    | [], _::_ -> false
+    | x1::xs1, x2::xs2 -> if x1 = x2 then
+      eq' xs1 xs2
+      else false in
+    eq' l l'
+;;
+
+(* 07 *)
+let encode l =
+  let rec line (sum, letter) = function
+  | [] -> sum,letter,[]
+  | x::xs -> if x = letter then
+    line (sum+1, letter) xs
+    else sum,letter, x::xs in
+  let rec line' acc = function
+  | [] -> acc
+  | x::xs ->
+    let sum, letter, xs' = line (1,x) xs in
+    line' (acc @ [sum, letter]) xs' in
+  line' [] l
+;;
+
+(* 08 *)
+
+type 'a rle =
+  | One of 'a
+  | Many of int * 'a
+
+let inc = function
+| One x -> Many (2,x)
+| Many (n,x) -> Many (n+1,x)
+;;
+let from_rle = function
+| One x -> x
+| Many (_,x) -> x
+;;
+
+let encode2 l =
+  let rec line acc = function
+  | [] -> acc,[]
+  | x::xs -> if x = from_rle acc then
+    line (inc acc) xs
+    else acc, x::xs in
+  let rec line' acc = function
+  | [] -> acc
+  | x::xs ->
+    let rle', xs' = line (One x) xs in
+    line' (rle'::acc) xs' in
+  line' [] l
+    |> rev
+;;
+
+(* 09 *)
+let duplicate l =
+  let rec dupe acc = function
+  | [] -> acc
+  | x::xs -> dupe (x::x::acc) xs in
+  dupe [] l
+    |> rev
+
+;;
+
+(* 10 *)
+let split l n =
+  let rec split' acc n = function
+  | [] -> acc, []
+  | x::xs -> if n = 0 then
+    acc, x::xs
+    else split' (x::acc) (n-1) xs in
+  let l1, l2 = split' [] n l in
+  rev l1, l2
+;;
