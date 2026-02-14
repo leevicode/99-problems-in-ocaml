@@ -125,3 +125,69 @@ let split l n =
   let l1, l2 = split' [] n l in
   rev l1, l2
 ;;
+
+(* 11 *)
+let remove_at n l =
+  let rec aux acc n = function
+  | [] -> rev acc
+  | x::xs -> if n = 0 then
+    rev acc @ xs
+    else aux (x::acc) (n-1) xs in
+    aux [] n l
+  ;;
+  (* i am angry that the solution for 11 is not tail recursive.
+   * I would have implemented identically to the solution if I were using haskell >:(
+   *)
+
+(* 12 *)
+let insert_at e n l =
+  let rec aux acc n e = function
+  |[] -> e :: acc |> rev
+  | x::xs -> if n = 0 then
+    (rev acc) @ e::x::xs
+  else aux (x::acc) (n-1) e xs in
+  aux [] n e l
+;;
+
+(* 13 *)
+let range from to' =
+  let rec aux acc from to' = if from > to' then
+    acc
+  else aux (from::acc) (from+1) to' in
+  aux [] from to' |> rev
+;;
+
+(* 14 *)
+let lotto_select n to' =
+  let numbers = range 1 to' in
+  let open Random in
+  let () = self_init () in
+  let rec aux acc n  = function
+  | [] -> acc
+  | numbers ->
+  if n = 0 then
+    acc
+  else let selected_index = length numbers |> int in
+        (* [at n l] should always succeed, when 0 =< [n] < [length n] *)
+        match at selected_index numbers with None -> []
+        | Some selected_number ->
+          remove_at selected_index numbers
+          |> aux (selected_number::acc) (n-1) in
+  aux [] n numbers
+;;
+
+(* 15 *)
+let permutation l =
+  let open Random in
+  let () = self_init () in
+  let rec aux acc = function
+    | [] -> acc
+    | l' ->
+    let selected_index = length l' |> int in
+      (* [at n l] should always succeed, when 0 =< [n] < [length n] *)
+      match at selected_index l' with None -> []
+      | Some selected_number ->
+        remove_at selected_index l'
+        |> aux (selected_number::acc) in
+  aux [] l
+;;
